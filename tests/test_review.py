@@ -1,6 +1,5 @@
 import unittest
 from app.models import Review,User
-from flask_login import current_user
 from app import db
 
 class TestReview(unittest.TestCase):
