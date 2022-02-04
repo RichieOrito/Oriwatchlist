@@ -1,5 +1,4 @@
 import os
-from pickle import TRUE
 
 class Config:
 
@@ -28,10 +27,12 @@ class Config:
 
 
 class ProdConfig(Config):
-    pass
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
+
 
 class TestConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://postgres:xoxo@localhost/watchlist_test'
+
 
 class DevConfig(Config):
      SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://postgres:xoxo@localhost/watchlist'
@@ -39,6 +40,7 @@ class DevConfig(Config):
 
 class DevConfig(Config):
     DEBUG = True
+
 
 config_options = {
 'development':DevConfig,
