@@ -56,6 +56,23 @@ def search(movie_name):
     title = f'search results for {movie_name}'
     return render_template('search.html',movies = searched_movies)
 
+@main.route('/reviews/<int:id>')
+def movie_reviews(id):
+    movie = get_movie(id)
+
+    reviews = Review.get_reviews(id)
+    title = f'All reviews for {movie.title}'
+    return render_template('movie_reviews.html',title = title,reviews=reviews)
+
+
+@main.route('/review/<int:id>')
+def single_review(id):
+    review=Review.query.get(id)
+    format_review = markdown2.markdown(review.movie_review,extras=["code-friendly", "fenced-code-blocks"])
+    return render_template('review.html',review = review,format_review=format_review)
+
+
+
 
 @main.route('/movie/review/new/<int:id>', methods = ['GET','POST'])
 @login_required
@@ -70,6 +87,7 @@ def new_review(id):
         review = form.review.data
 
         new_review = Review(movie_id=movie.id,movie_title=title,image_path=movie.poster,movie_review=review,user=current_user)
+
         new_review.save_review()
 
         return redirect(url_for('.movie',id = movie.id ))
@@ -78,7 +96,7 @@ def new_review(id):
     return render_template('new_review.html',title = title, review_form=form, movie=movie)
 
 @main.route('/user/<uname>')
-@login_required
+
 def profile(uname):
     user = User.query.filter_by(username = uname).first()
 
@@ -120,11 +138,3 @@ def update_pic(uname):
         user_photo = PhotoProfile(pic_path = path,user = user)
         db.session.commit()
     return redirect(url_for('main.profile',uname=uname))
-
-@main.route('/review/<int:id>')
-def single_review(id):
-    review=Review.query.get(id)
-    if review is None:
-        abort(404)
-    format_review = markdown2.markdown(review.movie_review,extras=["code-friendly", "fenced-code-blocks"])
-    return render_template('review.html',review = review,format_review=format_review)
